@@ -53,7 +53,7 @@ greedy_cell_specific_alignment$best_cell_signature
     ## [1] "IRIS_PlasmaCell-FromPBMC_up"
     ## 
     ## [[1]]$best_COVID19_cell_signatures_cor2
-    ## [1] 0.3344707
+    ## [1] 0.3411229
     ## 
     ## 
     ## [[2]]
@@ -61,7 +61,7 @@ greedy_cell_specific_alignment$best_cell_signature
     ## [1] "IRIS_PlasmaCell-FromPBMC_up+IRIS_MemoryTcell-RO-unactivated_up"
     ## 
     ## [[2]]$best_COVID19_cell_signatures_cor2
-    ## [1] 0.4727243
+    ## [1] 0.4794752
 
 Plotting results: scatterplot
 
@@ -109,6 +109,120 @@ best_alignment_AUC <- best_alignment_AUC %>%
   ))
 
 
+#check statistics the AUC distributions from different signatures
+lapply(split(best_alignment_AUC, 
+             best_alignment_AUC$signature), 
+       function(x) 
+  x %>%
+    group_by(class1) %>%
+    summarise(perfomance = quantile(AUC, probs = c(0.25, 0.5, 0.75)), .groups = 'drop')
+  )
+```
+
+    ## $COVID19
+    ## # A tibble: 12 x 2
+    ##    class1         perfomance
+    ##    <ord>               <dbl>
+    ##  1 COVID-19            0.784
+    ##  2 COVID-19            0.863
+    ##  3 COVID-19            0.942
+    ##  4 viral               0.300
+    ##  5 viral               0.393
+    ##  6 viral               0.445
+    ##  7 bacterial           0.173
+    ##  8 bacterial           0.290
+    ##  9 bacterial           0.488
+    ## 10 non infectious      0.361
+    ## 11 non infectious      0.488
+    ## 12 non infectious      0.525
+    ## 
+    ## $plasmablasts
+    ## # A tibble: 12 x 2
+    ##    class1         perfomance
+    ##    <ord>               <dbl>
+    ##  1 COVID-19            0.616
+    ##  2 COVID-19            0.828
+    ##  3 COVID-19            0.935
+    ##  4 viral               0.451
+    ##  5 viral               0.527
+    ##  6 viral               0.628
+    ##  7 bacterial           0.317
+    ##  8 bacterial           0.413
+    ##  9 bacterial           0.463
+    ## 10 non infectious      0.363
+    ## 11 non infectious      0.489
+    ## 12 non infectious      0.628
+    ## 
+    ## $memory_T_cells
+    ## # A tibble: 12 x 2
+    ##    class1         perfomance
+    ##    <ord>               <dbl>
+    ##  1 COVID-19           0.246 
+    ##  2 COVID-19           0.369 
+    ##  3 COVID-19           0.517 
+    ##  4 viral              0.130 
+    ##  5 viral              0.216 
+    ##  6 viral              0.317 
+    ##  7 bacterial          0.0355
+    ##  8 bacterial          0.0986
+    ##  9 bacterial          0.236 
+    ## 10 non infectious     0.247 
+    ## 11 non infectious     0.443 
+    ## 12 non infectious     0.543 
+    ## 
+    ## $plasmablasts_and_memory_T_cells
+    ## # A tibble: 12 x 2
+    ##    class1         perfomance
+    ##    <ord>               <dbl>
+    ##  1 COVID-19            0.622
+    ##  2 COVID-19            0.75 
+    ##  3 COVID-19            0.865
+    ##  4 viral               0.364
+    ##  5 viral               0.427
+    ##  6 viral               0.561
+    ##  7 bacterial           0.138
+    ##  8 bacterial           0.242
+    ##  9 bacterial           0.348
+    ## 10 non infectious      0.318
+    ## 11 non infectious      0.477
+    ## 12 non infectious      0.580
+
+``` r
+#check significance p-values for the AUC distributions from different signatures
+lapply(split(best_alignment_AUC, 
+             best_alignment_AUC$signature), 
+       compute_AUC_distribution_p_values)
+```
+
+    ## $COVID19
+    ##           class1      p_value
+    ## 1       COVID-19 4.061504e-09
+    ## 2          viral 7.366922e-08
+    ## 3      bacterial 2.693925e-07
+    ## 4 non infectious 1.840803e-02
+    ## 
+    ## $plasmablasts
+    ##           class1      p_value
+    ## 1       COVID-19 4.864470e-06
+    ## 2          viral 9.735116e-01
+    ## 3      bacterial 2.148082e-03
+    ## 4 non infectious 3.087173e-01
+    ## 
+    ## $memory_T_cells
+    ##           class1      p_value
+    ## 1       COVID-19 9.542508e-01
+    ## 2          viral 1.604151e-11
+    ## 3      bacterial 5.882997e-15
+    ## 4 non infectious 3.245608e-03
+    ## 
+    ## $plasmablasts_and_memory_T_cells
+    ##           class1      p_value
+    ## 1       COVID-19 2.347588e-05
+    ## 2          viral 3.662863e-02
+    ## 3      bacterial 3.462020e-11
+    ## 4 non infectious 2.453493e-02
+
+``` r
 # scatter plot with correlation
 best_alignment_AUC_scatter_df <-
   tidyr::spread(
@@ -211,13 +325,14 @@ sessionInfo()
     ## 
     ## loaded via a namespace (and not attached):
     ##  [1] Rcpp_1.0.4.6      pillar_1.4.4      compiler_3.6.3    plyr_1.8.6       
-    ##  [5] tools_3.6.3       testthat_2.3.2    digest_0.6.25     evaluate_0.14    
-    ##  [9] lifecycle_0.2.0   tibble_3.0.1      gtable_0.3.0      nlme_3.1-144     
-    ## [13] lattice_0.20-38   mgcv_1.8-31       pkgconfig_2.0.3   rlang_0.4.11     
-    ## [17] Matrix_1.2-18     yaml_2.2.1        xfun_0.15         withr_2.2.0      
-    ## [21] stringr_1.4.0     knitr_1.29        generics_0.0.2    vctrs_0.3.1      
-    ## [25] grid_3.6.3        tidyselect_1.1.0  glue_1.4.1        R6_2.4.1         
-    ## [29] rmarkdown_2.3     farver_2.0.3      purrr_0.3.4       tidyr_1.1.0      
-    ## [33] magrittr_2.0.1    scales_1.1.1      ellipsis_0.3.1    htmltools_0.5.1.1
-    ## [37] ggthemes_4.2.0    splines_3.6.3     colorspace_1.4-1  labeling_0.3     
-    ## [41] stringi_1.4.6     munsell_0.5.0     crayon_1.3.4
+    ##  [5] tools_3.6.3       testthat_2.3.2    digest_0.6.25     lattice_0.20-38  
+    ##  [9] nlme_3.1-144      evaluate_0.14     lifecycle_0.2.0   tibble_3.0.1     
+    ## [13] gtable_0.3.0      mgcv_1.8-31       pkgconfig_2.0.3   rlang_0.4.11     
+    ## [17] Matrix_1.2-18     cli_2.0.2         yaml_2.2.1        xfun_0.15        
+    ## [21] withr_2.2.0       stringr_1.4.0     knitr_1.29        generics_0.0.2   
+    ## [25] vctrs_0.3.1       grid_3.6.3        tidyselect_1.1.0  glue_1.4.1       
+    ## [29] R6_2.4.1          fansi_0.4.1       rmarkdown_2.3     farver_2.0.3     
+    ## [33] purrr_0.3.4       tidyr_1.1.0       magrittr_2.0.1    splines_3.6.3    
+    ## [37] scales_1.1.1      ellipsis_0.3.1    htmltools_0.5.1.1 ggthemes_4.2.0   
+    ## [41] assertthat_0.2.1  colorspace_1.4-1  labeling_0.3      utf8_1.1.4       
+    ## [45] stringi_1.4.6     munsell_0.5.0     crayon_1.3.4
