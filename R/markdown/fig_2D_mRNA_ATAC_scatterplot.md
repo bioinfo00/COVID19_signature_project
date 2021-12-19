@@ -24,8 +24,9 @@ signature_genes <- c(
   "DOCK5"
 )
 
+
 # reading results from meta-analysis of COVID-19 training studies
-COVID19_pooled_mRNA_analysis <- read.csv2("../../results/suppl_tables/COVID-19_meta_analysis.csv")
+COVID19_pooled_mRNA_analysis <- read.csv2("../../results/suppl_tables/suppl_table_S3.csv")
 
 # define the RNA-seq score for each gene as -log(significance) * fold-change
 COVID19_pooled_mRNA_analysis <- COVID19_pooled_mRNA_analysis %>%
@@ -34,14 +35,16 @@ COVID19_pooled_mRNA_analysis <- COVID19_pooled_mRNA_analysis %>%
   dplyr::select(gene, mRNA_score) %>%
   dplyr::filter(gene %in% signature_genes)
 
+
 # reading results from ATAC-seq data analysis
-COVID19_ATAC_analysis = read.csv2('../../results/suppl_tables/COVID-19_Duke_PBMC_ATAC_gene_summary.csv')
+COVID19_ATAC_analysis = read.csv2('../../results/suppl_tables/suppl_table_S2.csv')
 
 
 # define the ATAC -seq score for each gene as -log(significance) * fold-change
 mRNA_ATAC_scores <- merge(COVID19_pooled_mRNA_analysis, COVID19_ATAC_analysis, by = "gene")
 mRNA_ATAC_scores <- mRNA_ATAC_scores %>%
   dplyr::mutate(indicator = ifelse(gene %in% signature_genes, "in signature", "background"))
+
 
 # plotting figure 2D
 ggplot(
