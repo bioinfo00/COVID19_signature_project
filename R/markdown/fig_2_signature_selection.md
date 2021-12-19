@@ -19,6 +19,7 @@ all_contrasts_dict <-
 all_contrasts <-
   readRDS(file = "../../data/mRNA_studies/all_contrasts.RDS")
 
+#excluding studies used for validation
 discovery_dev_studies_idx = which(!(all_contrasts_dict$use %in% 'validation'))
 ```
 
