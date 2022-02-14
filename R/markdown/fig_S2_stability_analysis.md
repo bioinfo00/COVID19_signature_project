@@ -2,15 +2,15 @@ Fig S2 - Stability analysis of solution space
 ================
 
 Here we perform a global stability analysis of the solution space. We
-define a stability value at the gene and at the solution level. At the
-gene level, stability is the frequency at which a given gene appears in
-the solution space. At the solution (signature) level, stability is the
-mean of stability of the genes contained in the solution.
+define a stability value at the gene and solution levels. At the gene
+level, stability is the frequency at which a given gene appears in the
+solution space. At the solution (signature) level, stability is the mean
+of stability of the genes contained in the solution.
 
 ``` r
 library(dplyr)
 library(ggplot2)
-source('../scripts/helper_functions.R')
+source("../scripts/helper_functions.R")
 filter_object <- readRDS("../../data/mRNA_studies/filter_object.RDS")
 pool_of_genes <- c(filter_object$posGeneNames, filter_object$negGeneNames)
 
@@ -34,10 +34,21 @@ solution_stability <- apply(
     ])
   }
 )
+```
 
-# based on performance in training and development set
+### Checking the stability of the selected COVID-19 signature
+
+``` r
+# this is the index of the selected COVID-19 signature from the
+# space of candidate solutions generated with the genetic algorithm
 selected_solution_idx <- 6329
+names(binary_solution_matrix)[which(binary_solution_matrix[selected_solution_idx, ] == 1)]
+```
 
+    ##  [1] "PIF1"     "TCEAL3"   "BANF1"    "EHD3"     "GUCD1"    "DOCK5"   
+    ##  [7] "TVP23B"   "SLK"      "SLC25A46" "ARAP2"    "ROCK2"
+
+``` r
 solution_stability_df <- reshape2::melt(solution_stability) %>%
   tibble::rownames_to_column("solution") %>%
   rename(stability = value)
@@ -61,9 +72,11 @@ p_solution_stability <- ggplot(solution_stability_df, aes(x = stability)) +
     hjust = 0,
     size  = 5
   )
+```
 
+### Plotting the results from the stability analysis
 
-# stability plot
+``` r
 selected_solution <- as.numeric(binary_solution_matrix[selected_solution_idx, ])
 genes_in_solution <- names(binary_solution_matrix)[which(selected_solution ==
   1)]
@@ -136,4 +149,4 @@ gridExtra::grid.arrange(p_solution_stability,
 )
 ```
 
-![](fig_S2_stability_analysis_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+![](fig_S2_stability_analysis_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
