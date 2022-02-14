@@ -1,21 +1,31 @@
 Fig S1 - meta-analysis of COVID-19 training studies
 ================
 
+This Markdown reproduces Fig S1. It consists of three main analysis
+steps: 1) meta-analysis of COVID-19 RNA-seq discovery studies, using the
+Meta-integrator package; 2) correlation between the two data streams; 3)
+significance of the correlation between the two data modalities when
+considering the COVID-19 signature genes.
+
+### Meta-analysis of COVID-19 RNA-seq discovery studies
+
 ``` r
 source("../scripts/helper_functions.R")
 library(dplyr)
 library(ggplot2)
 library(MetaIntegrator)
 
+# reading the RNA-seq studies
+all_contrasts <-
+  readRDS("../../data/mRNA_studies/all_contrasts.RDS")
+
+# reading the RNA-seq study data dictionary
 all_contrasts_dict <-
   readRDS("../../data/mRNA_studies/all_contrasts_dict.RDS")
 
 # selecting COVID-19 discovery studies
-COVID_contrasts_discovery_idx <- which(all_contrasts_dict$class1 == 'COVID-19' &
-                                         all_contrasts_dict$use == "discovery")
-
-all_contrasts <-
-  readRDS("../../data/mRNA_studies/all_contrasts.RDS")
+COVID_contrasts_discovery_idx <- which(all_contrasts_dict$class1 == "COVID-19" &
+  all_contrasts_dict$use == "discovery")
 
 COVID_contrasts_discovery <-
   all_contrasts[COVID_contrasts_discovery_idx]
@@ -79,7 +89,6 @@ meta_integrator_plot <- last_plot()
 meta_integrator_modified_plot <- last_plot() +
   theme_Publication() + theme(text = element_text(size = 14)) +
   theme(legend.position = "right")
-
 
 # filter results
 filter_object <- filterGenes(
@@ -147,10 +156,13 @@ p_scatter_RNA <- ggplot(
   )
 ```
 
-Correlation between transcriptional and epigenetic regulation
+### Correlation between transcriptional and epigenetic regulation
 
 ``` r
-COVID19_ATAC_analysis <- read.csv2("../../results/suppl_tables/COVID-19_Duke_PBMC_ATAC_gene_summary.csv")
+COVID19_ATAC_analysis <- read.csv2("../../results/suppl_tables/suppl_table_S4.csv", 
+                                   stringsAsFactors = F) %>%
+  dplyr::rename(ATAC_score = ATAC.score..pi.value.) %>% 
+  dplyr::mutate(ATAC_score = as.numeric(ATAC_score))
 
 pooled_results_with_ATAC <- merge(pooled_results, COVID19_ATAC_analysis,
   by = "gene"
@@ -170,9 +182,21 @@ p_scatter_RNA_ATAC <- ggplot(
   ylab("ATAC-seq score") +
   theme(legend.position = "none") +
   theme(text = element_text(size = 16))
+```
 
-# resampling analysis to assess the correlation between RNA and ATAC
-# for randomly extracted signatures made of differentially expressed genes
+### Significance of correlation between transcriptional and epigenetic regulation for the COVID-19 signature
+
+``` r
+COVID19_signature <- c(
+  "PIF1", "GUCD1", "EHD3", "TCEAL3", "BANF1",
+  "ARAP2", "SLC25A46", "SLK", "ROCK2", "TVP23B", "DOCK5"
+)
+
+RNA_ATAC_correlation_in_signature <- pooled_results_with_ATAC %>%
+  dplyr::filter(gene %in% COVID19_signature) %>%
+  dplyr::summarise(cor = cor(RNA_seq_score, ATAC_score)) %>%
+  pull()
+
 pooled_results_with_ATAC_significant_genes <- pooled_results_with_ATAC %>%
   dplyr::filter(regulation != "not significant")
 
@@ -205,7 +229,10 @@ p_corr_analysis <- ggplot(random_signature_correlation, aes(corr)) +
   xlim(c(-1, 1)) +
   theme_Publication() +
   theme(text = element_text(size = 16)) +
-  geom_vline(xintercept = 0.77, linetype = "dashed") +
+  geom_vline(
+    xintercept = RNA_ATAC_correlation_in_signature,
+    linetype = "dashed"
+  ) +
   annotate(
     "text",
     x = 0.75,
@@ -216,7 +243,7 @@ p_corr_analysis <- ggplot(random_signature_correlation, aes(corr)) +
   )
 
 
-sum(random_signature_correlation$corr > 0.77) /
+sum(random_signature_correlation$corr > RNA_ATAC_correlation_in_signature) /
   nrow(random_signature_correlation)
 ```
 
@@ -235,4 +262,4 @@ gridExtra::grid.arrange(
 
     ## Warning: Removed 2 rows containing missing values (geom_bar).
 
-![](fig_S1_meta_analysis_COVID19_studies_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](fig_S1_meta_analysis_COVID19_studies_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
