@@ -1,21 +1,16 @@
-Fig S3 S4 S5 - severity
+Fig S3 S4 S5 - Impact of demographic and clinical factors on the
+COVID-19 signature performance
 ================
+
+Here we explore whether demographic factors (sex and aging) and disease
+severity affects the COVID-19 performance. The analysis is based on
+validation studies.
 
 ``` r
 library(dplyr)
 library(ggplot2)
-
 source("../scripts/helper_functions.R")
-list.files("../../data/mRNA_studies/COVID19_validation/")
-```
 
-    ## [1] "GSE149689_pseudobulk_MI.RDS" "GSE152418_preprocessed.RDS" 
-    ## [3] "GSE152641_preprocessed.RDS"  "GSE155454_preprocessed.RDS" 
-    ## [5] "GSE157103_preprocessed.RDS"  "GSE162562_preprocessed.RDS" 
-    ## [7] "GSE163151_preprocessed.RDS"  "GSE166253_preprocessed.RDS" 
-    ## [9] "GSE171110_preprocessed.RDS"
-
-``` r
 COVID19_signature_up <-
   c("PIF1", "GUCD1", "EHD3", "TCEAL3", "BANF1")
 COVID19_signature_down <-
@@ -41,7 +36,6 @@ GSE152418 <- plot_COVID19_signature_scores(
   age_field = NA,
   severity_field = "group.severity.ch1"
 )
-
 
 GSE152641 <- plot_COVID19_signature_scores(
   study_accession = "GSE152641",
@@ -73,7 +67,6 @@ GSE155454 <- plot_COVID19_signature_scores(
   severity_field = "group.characteristics_ch1.2"
 )
 
-
 GSE157103 <- plot_COVID19_signature_scores(
   study_accession = "GSE157103",
   validation_study_path,
@@ -81,7 +74,6 @@ GSE157103 <- plot_COVID19_signature_scores(
   age_field = NA,
   severity_field = NA
 )
-
 
 
 GSE162562 <- plot_COVID19_signature_scores(
@@ -92,8 +84,6 @@ GSE162562 <- plot_COVID19_signature_scores(
   severity_field = "group.severity.ch1"
 )
 
-
-
 GSE166253 <- plot_COVID19_signature_scores(
   study_accession = "GSE166253",
   validation_study_path,
@@ -102,6 +92,8 @@ GSE166253 <- plot_COVID19_signature_scores(
   severity_field = "group.characteristics_ch1.5"
 )
 ```
+
+### Plotting the impact of sex
 
 ``` r
 gridExtra::grid.arrange(
@@ -116,6 +108,8 @@ gridExtra::grid.arrange(
 
 ![](fig_S3_S4_S5_severity_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
+### Plotting the impact of age
+
 ``` r
 gridExtra::grid.arrange(
   GSE149689$age,
@@ -126,6 +120,8 @@ gridExtra::grid.arrange(
 ```
 
 ![](fig_S3_S4_S5_severity_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+### Plotting the impact of disease severity
 
 ``` r
 gridExtra::grid.arrange(
