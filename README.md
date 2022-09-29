@@ -1,6 +1,6 @@
 # COVID-19 signature project
 Welcome to the COVID-19 signature project. The goal of the project was to identify a blood transcriptional signature able to distinguish 
-COVID-19 from healthy controls while producing marginal cross-reactivity with other infections and confounding factors. 
+COVID-19 from healthy controls, while producing marginal cross-reactivity with other infections and confounding factors. 
 
 The repository contains the data and code to reproduce the manuscript main and supplementary figures. 
 
