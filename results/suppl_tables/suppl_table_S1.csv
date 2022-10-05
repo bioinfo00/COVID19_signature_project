@@ -1,0 +1,128 @@
+;study;use;size;code;condition
+1;CRA002390;discovery;6;RC;COVID-19
+2;GSE161731;development;18;RC;COVID-19
+3;GSE161731;discovery;97;RC;COVID-19
+4;GSE161731;development;95;RC;COVID-19
+5;GSE161731;discovery;98;RC;COVID-19
+6;GSE161731;discovery;139;RC;COVID-19
+7;GSE150728;discovery;10;RC;COVID-19
+8;GSE149689;validation;20;RC;COVID-19
+9;GSE152418;validation;33;RC;COVID-19
+10;GSE152641;validation;86;RC;COVID-19
+11;GSE155454;validation;20;RC;COVID-19
+12;GSE155673;validation;12;RC;COVID-19
+13;GSE163151;validation;27;RC;COVID-19
+14;GSE166253;validation;26;RC;COVID-19
+15;GSE171110;validation;54;RC;COVID-19
+16;GSE59635_GPL10558;discovery;19;N;Aging
+17;GSE59654_GPL10558;discovery;22;N;Aging
+18;GSE59743_GPL10558;discovery;30;N;Aging
+19;GSE53232_GPL11532;discovery;128;N;Obesity
+20;GSE55205_GPL10558;discovery;23;N;Obesity
+21;GSE56960_GPL13667;discovery;168;N;Obesity
+22;GSE83223_GPL10558;discovery;22;N;Obesity
+23;GSE131793_GPL6244;discovery;20;N;Hypertension
+24;GSE22356_GPL570;discovery;18;N;Hypertension
+25;GSE42057_GPL570;discovery;135;N;COPD
+26;GSE68526_GPL10904;discovery;121;N;Smoking
+27;GSE87072_GPL570;discovery;80;N;Smoking
+28;GSE16129_GPL96;development;56;OB;Staphylococcus aureus
+29;GSE62525_GPL16951;development;28;OB;Mycobacterium tuberculosis
+30;GSE25504_GPL570;development;5;OB;Unknown bacterium
+31;GSE69528_GPL10558;development;111;OB;"Acinetobacter baumannii;Acinetobacter lwoffii;Aeromonas;Bacillus;Burkholderia pseudomallei;Citrobacter freundii;Corynebacterium;Cryptococcus neoformans;Enterococcus;Escherichia coli;Klebsiella;Klebsiella pneumoniae;Micrococcus;Pseudomonas aeruginosa;Salmonella;Salmonella group C;Sphingobacterium;Sphingomonas;Staphylococcus aureus;Streptococcus pyogenes;Streptococcus suis;Viridans streptococci"
+32;GSE32707_GPL10558;development;79;OB;Unknown bacterium
+33;GSE73461_GPL10558;development;107;OB;Unknown bacterium
+34;GSE103119_GPL10558;development;73;OB;"Mycoplasma;Streptococcus pneumoniae;Streptococcus pyogenes"
+35;GSE13015_GPL6947;discovery;34;OB;"Aeromonas hydrophila;Burkholderia pseudomallei;Corynebacterium;Enterococcus;Enterococcus faecium;Escherichia coli;Salmonella;Staphylococcus aureus;Streptococcus Non-Group A or B"
+36;GSE29161_GPL6480;discovery;10;OB;Unknown bacterium
+37;GSE19444_GPL6947;discovery;33;OB;Mycobacterium tuberculosis
+38;GSE30385_GPL201;discovery;20;OB;Unknown bacterium
+39;GSE16129_GPL97;discovery;52;OB;Staphylococcus
+40;GSE68004_GPL10558;discovery;30;OB;Streptococcus
+41;GSE83456_GPL10558;discovery;153;OB;Mycobacterium tuberculosis
+42;GSE60244_GPL10558;discovery;62;OB;Unknown bacterium
+43;GSE11755_GPL570;discovery;27;OB;Neisseria meningitidis
+44;GSE40586_GPL6244;discovery;39;OB;"Streptococcus pneumoniae;Unknown"
+45;GSE25504_GPL13667;discovery;15;OB;Unknown bacterium
+46;GSE30119_GPL6947;discovery;143;OB;Staphylococcus aureus
+47;GSE29536_GPL6102;discovery;141;OB;"Burkholderia pseudomallei;Mycobacterium tuberculosis"
+48;GSE97298_GPL11532;discovery;62;OB;Nontuberculous mycobacteria
+49;GSE73464_GPL10558;discovery;107;OB;Unknown bacterium
+50;GSE73462_GPL6947;discovery;39;OB;Unknown bacterium
+51;GSE13015_GPL6106;discovery;27;OB;"Acinetobactor baumannii;Burkholderia pseudomallei;Corynebacterium;Enterococcus;Escherichia coli;Klebsiella pneumoniae;Salmonella;Salmonella serotype b;Staphylococcus aureus;Staphylococcus coagulase negative;Streptococcus Non-Group A or B;Streptococcus pneumoniae"
+52;GSE19439_GPL6947;discovery;25;OB;Mycobacterium tuberculosis
+53;GSE41055_GPL5175;discovery;18;OB;Mycobacterium tuberculosis
+54;GSE25504_GPL6947;discovery;63;OB;"Enterococcus;Escherichia coli;group B Streptococcus;Staphylococcus"
+55;GSE73461_GPL10558;development;149;OV;Unknown virus
+56;GSE73464_GPL10558;development;149;OV;Unknown virus
+57;GSE29333_GPL6884;development;18;OV;Human T-Lymphotropic virus Type 1
+58;GSE74027_GPL21032;development;99;OV;Unknown virus
+59;GSE57730_GPL570;development;12;OV;Human immunodeficiency virus
+60;GSE36539_GPL6480;development;32;OV;Hepatitis E virus
+61;GSE73462_GPL6947;development;44;OV;Unknown virus
+62;GSE29536_GPL6102;development;152;OV;Human immunodeficiency virus
+63;GSE29429_GPL6947;development;185;OV;Human immunodeficiency virus
+64;GSE29366_GPL6884;discovery;31;OV;Influenza virus
+65;GSE13699_GPL6104;discovery;22;OV;Live-attenuated Yellow Fever Virus
+66;GSE67059_GPL10558;discovery;22;OV;Rhinovirus
+67;GSE4124_GPL571;discovery;45;OV;Human immunodeficiency virus
+68;GSE33580_GPL570;discovery;86;OV;Human immunodeficiency virus
+69;GSE85599_GPL17586;discovery;17;OV;Epstein-Barr Virus
+70;GSE6269_GPL96;discovery;24;OV;Influenza virus
+71;GSE60244_GPL10558;discovery;111;OV;Unknown virus
+72;GSE103842_GPL10558;discovery;74;OV;Respiratory syncytial virus
+73;GSE45918_GPL6883;discovery;16;OV;Epstein-Barr Virus
+74;GSE38900_GPL10558;discovery;36;OV;Respiratory syncytial virus
+75;GSE29333_GPL6947;discovery;19;OV;Human T-Lymphotropic virus Type 1
+76;GSE103119_GPL10558;discovery;115;OV;"Adenovirus;Bocavirus;Coronavirus;Human metapneumovirus;Human parainfluenza virus;Respiratory syncytial virus;Rhinovirus"
+77;GSE29429_GPL10558;discovery;47;OV;Human immunodeficiency virus
+78;GSE34205_GPL570;discovery;101;OV;"Influenza virus;Respiratory syncytial virus"
+79;GSE47199_GPL6244;discovery;40;OV;BK Polyomavirus
+80;GSE67059_GPL6947;discovery;103;OV;Rhinovirus
+81;GSE2171_GPL201;discovery;34;OV;Human immunodeficiency virus
+82;GSE38900_GPL6884;discovery;52;OV;"Influenza virus;Respiratory syncytial virus;Rhinovirus"
+83;GSE44228_GPL6884;discovery;72;OV;Human immunodeficiency virus
+84;GSE20346_GPL6947;development;44;RB;Unknown bacterium
+85;GSE42825_GPL10558;discovery;31;RB;Mycobacterium tuberculosis
+86;GSE42826_GPL10558;discovery;63;RB;Mycobacterium tuberculosis
+87;GSE42830_GPL10558;discovery;54;RB;Mycobacterium tuberculosis
+88;GSE20346_GPL6947;development;37;RV;Influenza virus
+89;GSE82050_GPL21185;discovery;39;RV;Influenza virus
+90;GSE111368_GPL10558;discovery;239;RV;Influenza virus
+91;GSE101702_GPL21185;discovery;159;RV;Influenza virus
+92;GSE68310_GPL10558;discovery;232;RV;"Coronavirus;Enterovirus;Influenza virus;Respiratory syncytial virus;Rhinovirus"
+93;GSE94916_GPL20844;validation;12;N;COPD
+94;GSE101710_GPL10558;validation;20;N;Aging
+95;GSE65219_GPL15988;validation;176;N;Aging
+96;GSE83864_GPL10558;validation;135;N;Air Pollution
+97;GSE69683_GPL13158;validation;333;N;Asthma
+98;GSE54837_GPL570;validation;142;N;COPD
+99;GSE56766_GPL570;validation;142;N;COPD
+100;GSE20680_GPL4133;validation;139;N;Coronary Artery Disease
+101;GSE20681_GPL4133;validation;198;N;Coronary Artery Disease
+102;GSE703_GPL80;validation;20;N;Hypertension
+103;GSE38267_GPL13607;validation;41;N;Hypertension
+104;GSE41233_GPL6947;validation;32;N;Obesity
+105;GSE69039_GPL10558;validation;18;N;Obesity
+106;GSE18897_GPL570;validation;80;N;Obesity
+107;GSE23323_GPL6480;validation;44;N;Smoking
+108;GSE87005_GPL6480;validation;40;N;Type 2 Diabetes
+109;GSE28623_GPL4133;validation;108;OB;Mycobacterium tuberculosis
+110;GSE36238_GPL570;validation;18;OB;Mycobacterium tuberculosis
+111;GSE64456_GPL10558_1;validation;39;OB;Unknown bacterium
+112;GSE64456_GPL10558_2;validation;69;OB;Unknown bacterium
+113;GSE65682_GPL13667;validation;225;OB;Unknown bacterium
+114;GSE40396_GPL10558;validation;30;OB;"Escherichia coli;Salmonella;Staphylococcus aureus;Unknown"
+115;GSE42026_GPL6947;validation;51;OB;Unknown bacterium
+116;GSE117827_GPL23126;validation;50;OV;"Coxsackievirus;Enterovirus;Respiratory syncytial virus;Rhinovirus"
+117;GSE40184_GPL96;validation;18;OV;Hepatitis C virus
+118;GSE40223_GPL10558;validation;10;OV;Hepatitis C virus
+119;GSE40396_GPL10558;validation;57;OV;"Adenovirus;Enterovirus;Human herpesvirus 6;Rhinovirus"
+120;GSE42026_GPL6947;validation;74;OV;"Influenza virus;Respiratory syncytial virus"
+121;GSE51808_GPL13158;validation;56;OV;Dengue virus
+122;GSE59312_GPL570;validation;79;OV;Hepatitis C virus
+123;GSE81246_GPL17692;validation;48;OV;Human cytomegalovirus
+124;GSE94916_GPL20844;validation;12;RB;Unknown bacterium
+125;GSE40012_GPL6947;validation;79;RB;Unknown bacterium
+126;GSE17156_GPL571;validation;113;RV;"Influenza virus;Respiratory syncytial virus;Rhinovirus"
+127;GSE40012_GPL6947;validation;60;RV;Influenza virus
