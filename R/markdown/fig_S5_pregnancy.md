@@ -6,7 +6,8 @@ pregnancy. Pregnancy data is from the study
 [GSE108497](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE108497).
 To reproduce the results, the following additional files are needed:
 [GPL10558-50081.txt](https://drive.google.com/file/d/11z5o6lWvJ9ip156QUV6pxax4e2X2q4tj/view?usp=sharing)
-and [GSE108497\_normalized\_data.txt](link%20to%20google%20drive).
+and
+[GSE108497\_normalized\_data.txt](https://drive.google.com/file/d/12-RQSNNoWmP8se_iL2hwvQzrL02J3R55/view?usp=sharing).
 
 ``` r
 library(dplyr)
