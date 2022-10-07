@@ -14,6 +14,12 @@ possible to simultaneously test COVID-19 detection and cross-reactivity.
 
 ``` r
 library(dplyr)
+```
+
+    ## Warning: replacing previous import 'vctrs::data_frame' by 'tibble::data_frame'
+    ## when loading 'dplyr'
+
+``` r
 library(ggplot2)
 source("../scripts/helper_functions.R")
 
@@ -41,7 +47,14 @@ sample_score <- scale(
 )
 ```
 
-    ## Error in get(genname, envir = envir) : object 'testthat_print' not found
+    ## Warning: Can't find generic `testthat_print` in package testthat to register S3 method.
+    ## ℹ This message is only shown to developers using devtools.
+    ## ℹ Do you need to update testthat to the latest version?
+
+    ## Warning: Can't find generic `testthat_print` in package testthat to register S3 method.
+    ## Can't find generic `testthat_print` in package testthat to register S3 method.
+    ## ℹ This message is only shown to developers using devtools.
+    ## ℹ Do you need to update testthat to the latest version?
 
 ``` r
 dataset$y[, "disease state:ch1"] <- factor(
@@ -453,14 +466,14 @@ sessionInfo()
     ## [1] ggplot2_3.3.2 dplyr_1.0.0  
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] Rcpp_1.0.4.6      pillar_1.4.4      compiler_3.6.3    plyr_1.8.6       
-    ##  [5] tools_3.6.3       testthat_2.3.2    digest_0.6.25     evaluate_0.14    
-    ##  [9] lifecycle_0.2.0   tibble_3.0.1      gtable_0.3.0      pkgconfig_2.0.3  
-    ## [13] rlang_0.4.11      cli_2.0.2         yaml_2.2.1        xfun_0.15        
-    ## [17] withr_2.2.0       stringr_1.4.0     knitr_1.29        generics_0.0.2   
-    ## [21] pROC_1.16.2       vctrs_0.3.1       grid_3.6.3        tidyselect_1.1.0 
-    ## [25] glue_1.4.1        R6_2.4.1          fansi_0.4.1       rmarkdown_2.3    
-    ## [29] purrr_0.3.4       farver_2.0.3      magrittr_2.0.1    scales_1.1.1     
-    ## [33] ellipsis_0.3.1    htmltools_0.5.1.1 ggthemes_4.2.0    assertthat_0.2.1 
-    ## [37] colorspace_1.4-1  labeling_0.3      utf8_1.1.4        stringi_1.4.6    
-    ## [41] munsell_0.5.0     crayon_1.3.4
+    ##  [1] Rcpp_1.0.4.6      highr_0.8         pillar_1.4.4      compiler_3.6.3   
+    ##  [5] plyr_1.8.6        tools_3.6.3       testthat_2.3.2    digest_0.6.25    
+    ##  [9] evaluate_0.15     lifecycle_1.0.1   tibble_3.0.1      gtable_0.3.0     
+    ## [13] pkgconfig_2.0.3   rlang_1.0.2       cli_3.3.0         rstudioapi_0.11  
+    ## [17] yaml_2.2.1        xfun_0.29         withr_2.2.0       stringr_1.4.0    
+    ## [21] knitr_1.39        generics_0.0.2    pROC_1.16.2       vctrs_0.4.1      
+    ## [25] grid_3.6.3        tidyselect_1.1.0  glue_1.6.2        R6_2.4.1         
+    ## [29] fansi_0.4.1       rmarkdown_2.3     purrr_0.3.4       farver_2.0.3     
+    ## [33] magrittr_2.0.1    scales_1.1.1      ellipsis_0.3.2    htmltools_0.5.1.1
+    ## [37] ggthemes_4.2.0    colorspace_1.4-1  labeling_0.3      utf8_1.1.4       
+    ## [41] stringi_1.4.6     munsell_0.5.0     crayon_1.3.4

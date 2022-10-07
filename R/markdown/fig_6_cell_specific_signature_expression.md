@@ -1,4 +1,4 @@
-Fig 5 - cell specific signature expression
+Fig 6 - cell specific signature expression
 ================
 
 <a href="https://github.com/giannimonaco/ABIS/tree/master/data">data
@@ -7,6 +7,12 @@ source</a>
 ``` r
 source("../scripts/helper_functions.R")
 library(dplyr)
+```
+
+    ## Warning: replacing previous import 'vctrs::data_frame' by 'tibble::data_frame'
+    ## when loading 'dplyr'
+
+``` r
 library(ggplot2)
 
 # defining signature genes
@@ -43,7 +49,7 @@ blood_cells_TPM_signature %>%
   hist(20, xlab = "log2(1 + TPM)", main = "distribution of logged TPM values")
 ```
 
-![](fig_5_cell_specific_signature_expression_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+![](fig_6_cell_specific_signature_expression_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
 ``` r
 TPM_cutoff <- 4
@@ -2333,7 +2339,7 @@ p_fig_5_panel_B <-
 p_fig_5_panel_B
 ```
 
-![](fig_5_cell_specific_signature_expression_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](fig_6_cell_specific_signature_expression_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 Plotting results from scRNA-seq data to show the role of signature genes
 in plasmablast-mediated COVID-19 detection
@@ -2369,4 +2375,4 @@ p_fig_5_panel_C <-
 p_fig_5_panel_C
 ```
 
-![](fig_5_cell_specific_signature_expression_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](fig_6_cell_specific_signature_expression_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->

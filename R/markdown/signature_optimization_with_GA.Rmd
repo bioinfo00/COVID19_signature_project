@@ -1,0 +1,65 @@
+---
+title: "Signature optimization with a genetic algorithm"
+output: rmarkdown::github_document
+---
+
+This Markdown illustrates the methodology for optimization the COVID-19 signature
+using a genetic algorithm. The optimization parameters (population, max iterations, and grid size) are set to minimize the computational time when generating the Markdown file. Note that, when using more extensive searches, the computational time increases substantially and may require parallel computing.
+
+```{r, message = FALSE, warning = FALSE}
+library(GA)
+library(dplyr)
+source("../scripts/GA_optimization_helper_functions.R")
+
+#load data
+COVID_contrasts = readRDS('../../data/optimization_datasets/COVID_contrasts.RDS')
+COVID_contrasts_dict = readRDS('../../data/optimization_datasets/COVID_contrasts_dict.RDS')
+
+non_COVID_contrasts = readRDS('../../data/optimization_datasets/all_curated_contrasts.RDS')
+non_COVID_contrasts_dict = readRDS('../../data/optimization_datasets/non_COVID_contrasts_dict.RDS')
+
+#select discovery data
+COVID_contrasts = COVID_contrasts[which(COVID_contrasts_dict$use == 'discovery')]
+COVID_contrasts_dict = COVID_contrasts_dict %>% dplyr::filter(use == 'discovery')
+
+non_COVID_contrasts = non_COVID_contrasts[which(non_COVID_contrasts_dict$use == 'discovery')]
+non_COVID_contrasts_dict = non_COVID_contrasts_dict %>% dplyr::filter(use == 'discovery')
+
+#load prior info
+prior_info_matrix = readRDS('../../data/optimization_datasets/prior_info_matrix.RDS')
+filter_object = readRDS('../../data/optimization_datasets/filter_object.RDS')
+pool_of_genes = c(filter_object$posGeneNames, filter_object$negGeneNames)
+
+#initialize population of solutions
+population_size = 10
+expected_signature_size = 20
+initial_population = initialize_population(population_size, solution_size = length(pool_of_genes), expected_signature_size, filter_object)
+
+#generate all convex combinations of the weights
+weight_grid = create_weight_grid(from = 0, to = 1, by = 0.5)
+
+#run GA on the grid of weights 
+maxiter = 5
+GA_optimization_results = apply(weight_grid[1:2, ], 1,
+                                function(x)
+                                  ga(type = "binary",
+                                     fitness = compute_fitness_from_binary,
+                                     pool_of_genes = pool_of_genes,
+                                     filter_object = filter_object,
+                                     weight_COVID_vs_healthy = x[1],
+                                     weight_COVID_vs_infection = x[2],
+                                     weight_Non.Microbial = x[3],
+                                     weight_Other = x[4],
+                                     weight_Resp = x[5],
+                                     prior_info_matrix = prior_info_matrix,
+                                     weight_prior_info = x[6],
+                                     max_signature_size = expected_signature_size,
+                                     nBits = length(pool_of_genes),
+                                     popSize = nrow(initial_population),
+                                     maxiter = maxiter,
+                                     suggestions = initial_population,
+                                     names = pool_of_genes))
+
+# binary solutions
+lapply(GA_optimization_results, function(x) x@solution)
+```

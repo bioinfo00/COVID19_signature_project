@@ -1,5 +1,4 @@
-Fig S3 S4 S5 - Impact of demographic and clinical factors on the
-COVID-19 signature performance
+Fig S3 S4 - Impact of age and sex on the COVID-19 signature performance
 ================
 
 Here we explore whether demographic factors (sex and aging) and disease
@@ -8,6 +7,12 @@ validation studies.
 
 ``` r
 library(dplyr)
+```
+
+    ## Warning: replacing previous import 'vctrs::data_frame' by 'tibble::data_frame'
+    ## when loading 'dplyr'
+
+``` r
 library(ggplot2)
 source("../scripts/helper_functions.R")
 
@@ -26,7 +31,14 @@ GSE149689 <- plot_COVID19_signature_scores(
 )
 ```
 
-    ## Error in get(genname, envir = envir) : object 'testthat_print' not found
+    ## Warning: Can't find generic `testthat_print` in package testthat to register S3 method.
+    ## ℹ This message is only shown to developers using devtools.
+    ## ℹ Do you need to update testthat to the latest version?
+
+    ## Warning: Can't find generic `testthat_print` in package testthat to register S3 method.
+    ## Can't find generic `testthat_print` in package testthat to register S3 method.
+    ## ℹ This message is only shown to developers using devtools.
+    ## ℹ Do you need to update testthat to the latest version?
 
 ``` r
 GSE152418 <- plot_COVID19_signature_scores(
@@ -93,6 +105,19 @@ GSE166253 <- plot_COVID19_signature_scores(
 )
 ```
 
+### Plotting the impact of age
+
+``` r
+gridExtra::grid.arrange(
+  GSE149689$age,
+  GSE162562$age,
+  GSE166253$age,
+  ncol = 1
+)
+```
+
+![](fig_S3_S4_age_sex_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
 ### Plotting the impact of sex
 
 ``` r
@@ -106,31 +131,4 @@ gridExtra::grid.arrange(
 )
 ```
 
-![](fig_S3_S4_S5_severity_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
-
-### Plotting the impact of age
-
-``` r
-gridExtra::grid.arrange(
-  GSE149689$age,
-  GSE162562$age,
-  GSE166253$age,
-  ncol = 1
-)
-```
-
-![](fig_S3_S4_S5_severity_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
-
-### Plotting the impact of disease severity
-
-``` r
-gridExtra::grid.arrange(
-  GSE149689$severity,
-  GSE152418$severity,
-  GSE162562$severity,
-  GSE155454$severity,
-  ncol = 1
-)
-```
-
-![](fig_S3_S4_S5_severity_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](fig_S3_S4_age_sex_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->

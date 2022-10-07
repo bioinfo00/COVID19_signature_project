@@ -1,13 +1,14 @@
-Fig 2A-2B - signature selection and evaluation in training studies
-================
+---
+title: "Fig 2A-2B - signature selection and evaluation in training studies"
+output: rmarkdown::github_document
+---
 
-We select the COVID-19 signature out of a population of candidate
-signatures generated with a genetic algorithm. The best signature is
-selected based on its euclidean distance from the ‘utopia’ signature,
-one that would result in perfect detection in COVID-19 studies, and no
-cross-reactivity in other study classes (e.g., respiratory infections).
-
-``` r
+We select the COVID-19 signature out of a population of candidate signatures
+generated with a genetic algorithm. The best signature is selected based
+on its euclidean distance from the 'utopia' signature, one that would result
+in perfect detection in COVID-19 studies, and no cross-reactivity in
+other study classes (e.g., respiratory infections).
+```{r message = FALSE, warning = FALSE}
 library(dplyr)
 library(ggplot2)
 source('../scripts/helper_functions.R')
@@ -23,10 +24,10 @@ all_contrasts <-
 discovery_dev_studies_idx = which(!(all_contrasts_dict$use %in% 'validation'))
 ```
 
-The code below takes several hours, results have been saved and load in
-the following code chunk.
 
-``` r
+The code below takes several hours, results have been saved and
+load in the following code chunk.
+```{r message = FALSE}
 # binary_solution_matrix <- readRDS("../../data/optimization_results/binary_solution_matrix.RDS")
 #
 # # measure gene stability
@@ -71,23 +72,18 @@ the following code chunk.
 #                               id = 1:length(solution_stability))
 
 # saveRDS(dist_from_utopia_df, '../../results/dist_from_utopia_df.RDS')
+
 ```
 
-``` r
+
+
+```{r message = FALSE , warning = FALSE, fig.width =  15, fig.height = 7, error = FALSE}
 candidate_signatures <- readRDS("../../results/candidate_signatures.RDS")
 dist_from_utopia_df <- readRDS("../../results/dist_from_utopia_df.RDS")
 selected_index <- 3116
 selected_signature <- candidate_signatures[[selected_index]]
 selected_signature
-```
 
-    ## $up
-    ## [1] "PIF1"   "TCEAL3" "BANF1"  "EHD3"   "GUCD1" 
-    ## 
-    ## $down
-    ## [1] "DOCK5"    "TVP23B"   "SLK"      "SLC25A46" "ARAP2"    "ROCK2"
-
-``` r
 p_scatter <- ggplot(dist_from_utopia_df, aes(x = discovery, y = dev, text = id)) +
   geom_point(aes(size = stability),
     fill = "white",
@@ -148,26 +144,7 @@ discovery_dev_contrasts_AUC <- compute_contrasts_AUCs(
 discovery_dev_contrasts_AUC %>%
   group_by(class1) %>%
   summarise(perfomance = quantile(AUC, probs = c(0.25, 0.5, 0.75)))
-```
 
-    ## # A tibble: 12 x 2
-    ## # Groups:   class1 [4]
-    ##    class1         perfomance
-    ##    <ord>               <dbl>
-    ##  1 COVID-19            0.846
-    ##  2 COVID-19            0.889
-    ##  3 COVID-19            0.955
-    ##  4 viral               0.327
-    ##  5 viral               0.397
-    ##  6 viral               0.444
-    ##  7 bacterial           0.165
-    ##  8 bacterial           0.307
-    ##  9 bacterial           0.469
-    ## 10 non infectious      0.400
-    ## 11 non infectious      0.506
-    ## 12 non infectious      0.528
-
-``` r
 # get boxplot with AUC distributions
 p_boxplot <- get_AUC_distribution_boxplot(discovery_dev_contrasts_AUC)
 
@@ -179,38 +156,6 @@ gridExtra::grid.arrange(
 )
 ```
 
-![](fig_2_signature_selection_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
-
-``` r
+```{r message = FALSE , warning= FALSE}
 sessionInfo()
 ```
-
-    ## R version 3.6.3 (2020-02-29)
-    ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-    ## Running under: macOS Catalina 10.15.7
-    ## 
-    ## Matrix products: default
-    ## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
-    ## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
-    ## 
-    ## locale:
-    ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-    ## 
-    ## attached base packages:
-    ## [1] stats     graphics  grDevices utils     datasets  methods   base     
-    ## 
-    ## other attached packages:
-    ## [1] ggplot2_3.3.2 dplyr_1.0.0  
-    ## 
-    ## loaded via a namespace (and not attached):
-    ##  [1] highr_0.8         pillar_1.4.4      compiler_3.6.3    tools_3.6.3      
-    ##  [5] testthat_2.3.2    digest_0.6.25     evaluate_0.15     lifecycle_1.0.1  
-    ##  [9] tibble_3.0.1      gtable_0.3.0      pkgconfig_2.0.3   rlang_1.0.2      
-    ## [13] cli_3.3.0         rstudioapi_0.11   yaml_2.2.1        xfun_0.29        
-    ## [17] gridExtra_2.3     withr_2.2.0       stringr_1.4.0     knitr_1.39       
-    ## [21] generics_0.0.2    vctrs_0.4.1       isoband_0.2.2     grid_3.6.3       
-    ## [25] tidyselect_1.1.0  glue_1.6.2        R6_2.4.1          fansi_0.4.1      
-    ## [29] rmarkdown_2.3     farver_2.0.3      purrr_0.3.4       magrittr_2.0.1   
-    ## [33] scales_1.1.1      ellipsis_0.3.2    htmltools_0.5.1.1 ggthemes_4.2.0   
-    ## [37] MASS_7.3-51.5     colorspace_1.4-1  labeling_0.3      utf8_1.1.4       
-    ## [41] stringi_1.4.6     munsell_0.5.0     crayon_1.3.4

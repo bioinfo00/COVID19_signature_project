@@ -1,0 +1,189 @@
+---
+title: "Fig 5 - COVID-19 signature fit"
+output: rmarkdown::github_document
+---
+
+Reading data input
+```{r message = FALSE}
+library(dplyr)
+library(ggplot2)
+source("../scripts/helper_functions.R")
+
+all_contrasts <-
+  readRDS(file = "../../data/mRNA_studies/all_contrasts.RDS")
+
+all_contrasts_dict <-
+  readRDS(file = "../../data/mRNA_studies/all_contrasts_dict.RDS")
+
+filter_object <-
+  readRDS("../../data/mRNA_studies/filter_object.RDS")
+
+annotation_libraries <-
+  readRDS("../../data/prior_info/gene_sets_libraries/library_list")
+cell_specific_signatures <- c(annotation_libraries$iris)
+
+COVID19_signature <- list(
+  up = c("PIF1", "GUCD1", "EHD3", "TCEAL3", "BANF1"),
+  down = c("ARAP2", "SLC25A46", "SLK", "ROCK2", "TVP23B", "DOCK5")
+)
+```
+
+
+Performing signature alignment
+```{r message = FALSE}
+greedy_cell_specific_alignment <-
+  performa_greedy_cell_specific_alignment(
+    COVID19_signature,
+    cell_specific_signatures,
+    all_contrasts,
+    all_contrasts_dict,
+    filter_object
+  )
+
+# show results
+greedy_cell_specific_alignment$best_cell_signature
+```
+
+Plotting results: scatterplot
+
+```{r message = FALSE}
+best_alignment_AUC <-
+  greedy_cell_specific_alignment$contrasts_AUC_long %>% filter(
+    .id %in% c(
+      "COVID19_AUC",
+      "cell_signatures_AUC.IRIS_PlasmaCell-FromPBMC_up",
+      "cell_signatures_AUC.IRIS_MemoryTcell-RO-unactivated_up",
+      "best_cell_combo_AUC"
+    )
+  )
+
+best_alignment_AUC <- best_alignment_AUC %>%
+  rename(signature = .id) %>%
+  dplyr::mutate(signature = gsub("COVID19_AUC", "COVID19", signature)) %>%
+  dplyr::mutate(
+    signature = gsub(
+      "cell_signatures_AUC.IRIS_PlasmaCell-FromPBMC_up",
+      "plasmablasts",
+      signature
+    )
+  ) %>%
+  dplyr::mutate(
+    signature = gsub(
+      "cell_signatures_AUC.IRIS_MemoryTcell-RO-unactivated_up",
+      "memory_T_cells",
+      signature
+    )
+  ) %>%
+  dplyr::mutate(signature = gsub(
+    "best_cell_combo_AUC",
+    "plasmablasts_and_memory_T_cells",
+    signature
+  )) %>%
+  dplyr::mutate(signature = factor(
+    signature,
+    levels = c(
+      "COVID19",
+      "plasmablasts",
+      "memory_T_cells",
+      "plasmablasts_and_memory_T_cells"
+    )
+  ))
+
+
+#check statistics the AUC distributions from different signatures
+lapply(split(best_alignment_AUC, 
+             best_alignment_AUC$signature), 
+       function(x) 
+  x %>%
+    group_by(class1) %>%
+    summarise(perfomance = quantile(AUC, probs = c(0.25, 0.5, 0.75)), .groups = 'drop')
+  )
+
+#check significance p-values for the AUC distributions from different signatures
+lapply(split(best_alignment_AUC, 
+             best_alignment_AUC$signature), 
+       compute_AUC_distribution_p_values)
+
+
+
+# scatter plot with correlation
+best_alignment_AUC_scatter_df <-
+  tidyr::spread(
+    best_alignment_AUC %>% select(signature, study, AUC, class1, use, class3, size),
+    key = signature,
+    value = AUC
+  )
+
+
+ggplot(
+  best_alignment_AUC_scatter_df,
+  aes(x = plasmablasts_and_memory_T_cells, y = COVID19)
+) +
+  theme_Publication() +
+  # geom_point(aes(color = class1), size = 4) +
+  geom_point(
+    size = 5,
+    fill = "gray80",
+    colour = "black",
+    pch = 21
+  ) +
+  geom_smooth(
+    method = "lm",
+    formula = y ~ x,
+    color = "black"
+  ) +
+  theme(
+    legend.key.size = unit(2, "line"),
+    legend.text = element_text(size = 12),
+    legend.position = "top"
+  ) +
+  ylab(expression(sigma * "(COVID-19) AUCs")) +
+  xlab(expression(sigma *
+    "(plasmablasts + memory T) AUCs")) +
+  labs(color = "contrast") +
+  theme(text = element_text(size = 14))
+```
+
+
+Plotting results: boxplots
+
+```{r message = FALSE, fig.height = 8}
+# boxplots with performance distributions
+facet_names <- as_labeller(
+  c(
+    COVID19 = "sigma(COVID-19)",
+    plasmablasts = "sigma(plasmablasts)",
+    memory_T_cells = "sigma(memory~T)",
+    plasmablasts_and_memory_T_cells = "sigma(plasmablasts+memory~T)"
+  ),
+  default = label_parsed
+)
+
+ggplot(best_alignment_AUC, aes(x = class1, y = AUC)) +
+  geom_boxplot(outlier.shape = NA, aes(color = class1), size = 1) +
+  scale_color_manual(values = c("#c9daf8ff", "#fce5cdff", "#d9ead3ff", "#ead1dcff")) +
+  theme_Publication() +
+  #scale_fill_manual(values = c("white", paste0("gray", seq(20, 60, length.out = 3)))) +
+  facet_wrap(~
+  signature,
+  ncol = 1,
+  labeller = facet_names
+  ) +
+  theme(legend.position = "right") +
+  xlab("contrast") +
+  ylab("AUC") +
+  guides(color = FALSE) +
+  labs(size = "study size") +
+  theme(
+    legend.key.size = unit(2, "line"),
+    legend.text = element_text(size = 10),
+    legend.position = "top"
+  ) +
+  theme(strip.text.x = element_text(size = 12))
+
+```
+
+
+```{r message = FALSE}
+sessionInfo()
+```

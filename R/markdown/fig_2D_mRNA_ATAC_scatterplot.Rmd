@@ -1,18 +1,14 @@
-Fig 2D - mRNA and ATAC-seq correlation
-================
+---
+title: "Fig 2D - mRNA and ATAC-seq correlation"
+output: rmarkdown::github_document
+---
 
-We show that the eleven genes in the COVID-19 signature are regulated at
-the transcriptional and epigenetic levels in a consistent manner.
-
-``` r
+We show that the eleven genes in the COVID-19 signature 
+are regulated at the transcriptional and epigenetic levels in 
+a consistent manner. 
+```{r setup, message = FALSE}
 source("../scripts/helper_functions.R")
 library(dplyr)
-```
-
-    ## Warning: replacing previous import 'vctrs::data_frame' by 'tibble::data_frame'
-    ## when loading 'dplyr'
-
-``` r
 library(ggplot2)
 
 # defining the signature genes
@@ -77,6 +73,6 @@ ggplot(
     label = "PIF1",
     size = 6
   )
+
 ```
 
-![](fig_2D_mRNA_ATAC_scatterplot_files/figure-gfm/setup-1.png)<!-- -->

@@ -1,0 +1,24 @@
+---
+title: "Fig 4 - Analysis of COVID-19 severity"
+output: rmarkdown::github_document
+---
+
+```{r, message = FALSE, warning = FALSE, fig.height = 8, fig.width = 8}
+library(dplyr)
+library(ggplot2)
+
+source("../scripts/helper_functions.R")
+COVID19_signature_up <- c("PIF1", "GUCD1", "EHD3", "TCEAL3", "BANF1")
+COVID19_signature_down <- c("ARAP2", "SLC25A46", "SLK", "ROCK2", "TVP23B", "DOCK5")
+
+p_SCHULTE = plot_SCHULTE_results(COVID19_signature_up, COVID19_signature_down)
+p_COMBAT = plot_COMBAT_results(signature_up = COVID19_signature_up, 
+                               signature_down = COVID19_signature_down)
+p_STEPHE = plot_STEPHE_results(signature_up = COVID19_signature_up, 
+                               signature_down = COVID19_signature_down)
+
+gridExtra::grid.arrange(p_SCHULTE$ulas_box, p_SCHULTE$ulas_roc,
+                        p_COMBAT$p_line, p_STEPHE$p_line)
+```
+
+

@@ -1,23 +1,17 @@
-Fig S1 - meta-analysis of COVID-19 training studies
-================
+---
+title: "Fig S1 - meta-analysis of COVID-19 training studies"
+output: rmarkdown::github_document
+---
 
-This Markdown reproduces Fig S1. It consists of three main analysis
-steps: 1) meta-analysis of COVID-19 RNA-seq discovery studies, using the
-Meta-integrator package; 2) correlation between the two data streams; 3)
-significance of the correlation between the two data modalities when
-considering the COVID-19 signature genes.
+This Markdown reproduces Fig S1. It consists of three main analysis steps: 
+1) meta-analysis of COVID-19 RNA-seq discovery studies, using the Meta-integrator package; 2) 
+correlation between the two data streams; 3) significance of the correlation between the two data modalities when considering the COVID-19 signature genes. 
+
 
 ### Meta-analysis of COVID-19 RNA-seq discovery studies
-
-``` r
+```{r, message = FALSE, fig.height = 3}
 source("../scripts/helper_functions.R")
 library(dplyr)
-```
-
-    ## Warning: replacing previous import 'vctrs::data_frame' by 'tibble::data_frame'
-    ## when loading 'dplyr'
-
-``` r
 library(ggplot2)
 library(MetaIntegrator)
 
@@ -40,57 +34,14 @@ COVID_contrasts_discovery <-
 COVID_discovery_meta_object <-
   list(originalData = COVID_contrasts_discovery)
 checkDataObject(COVID_discovery_meta_object, "Meta", "Pre-Analysis")
-```
 
-    ## [1] TRUE
-
-``` r
 # run meta-analysis using the meta-integrator package
 COVID_discovery_meta_analysis <- runMetaAnalysis(
   COVID_discovery_meta_object,
   maxCores = 1,
   runLeaveOneOutAnalysis = T
 )
-```
 
-    ## Found common probes in 2 
-    ## Found common probes in 3 
-    ## Found common probes in 4 
-    ## Found common probes in 5 
-    ## Computing effect sizes...
-    ## Computing summary effect sizes...
-    ## Computing Fisher's output...
-
-![](fig_S1_meta_analysis_COVID19_studies_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
-
-    ## Found common probes in 2 
-    ## Found common probes in 3 
-    ## Found common probes in 4 
-    ## Computing effect sizes...
-    ## Computing summary effect sizes...
-    ## Computing Fisher's output...Found common probes in 2 
-    ## Found common probes in 3 
-    ## Found common probes in 4 
-    ## Computing effect sizes...
-    ## Computing summary effect sizes...
-    ## Computing Fisher's output...Found common probes in 2 
-    ## Found common probes in 3 
-    ## Found common probes in 4 
-    ## Computing effect sizes...
-    ## Computing summary effect sizes...
-    ## Computing Fisher's output...Found common probes in 2 
-    ## Found common probes in 3 
-    ## Found common probes in 4 
-    ## Computing effect sizes...
-    ## Computing summary effect sizes...
-    ## Computing Fisher's output...Found common probes in 2 
-    ## Found common probes in 3 
-    ## Found common probes in 4 
-    ## Computing effect sizes...
-    ## Computing summary effect sizes...
-    ## Computing Fisher's output...
-
-``` r
 meta_integrator_plot <- last_plot()
 meta_integrator_modified_plot <- last_plot() +
   theme_Publication() + theme(text = element_text(size = 14)) +
@@ -160,11 +111,12 @@ p_scatter_RNA <- ggplot(
     hjust = "inward",
     color = "red",
   )
+
 ```
 
-### Correlation between transcriptional and epigenetic regulation
 
-``` r
+### Correlation between transcriptional and epigenetic regulation
+```{r, message = FALSE, fig.height = 8}
 COVID19_ATAC_analysis <- read.csv2("../../results/suppl_tables/suppl_table_S4.csv", 
                                    stringsAsFactors = F) %>%
   dplyr::rename(ATAC_score = ATAC.score..pi.value.) %>% 
@@ -190,9 +142,10 @@ p_scatter_RNA_ATAC <- ggplot(
   theme(text = element_text(size = 16))
 ```
 
-### Significance of correlation between transcriptional and epigenetic regulation for the COVID-19 signature
 
-``` r
+
+### Significance of correlation between transcriptional and epigenetic regulation for the COVID-19 signature
+```{r, message = FALSE, fig.height = 8}
 COVID19_signature <- c(
   "PIF1", "GUCD1", "EHD3", "TCEAL3", "BANF1",
   "ARAP2", "SLC25A46", "SLK", "ROCK2", "TVP23B", "DOCK5"
@@ -251,11 +204,7 @@ p_corr_analysis <- ggplot(random_signature_correlation, aes(corr)) +
 
 sum(random_signature_correlation$corr > RNA_ATAC_correlation_in_signature) /
   nrow(random_signature_correlation)
-```
 
-    ## [1] 0.001
-
-``` r
 # plotting Figure S1
 gridExtra::grid.arrange(
   p_scatter_RNA,
@@ -264,8 +213,5 @@ gridExtra::grid.arrange(
   ncol = 1,
   heights = c(0.4, 0.3, 0.3)
 )
+
 ```
-
-    ## Warning: Removed 2 rows containing missing values (geom_bar).
-
-![](fig_S1_meta_analysis_COVID19_studies_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->

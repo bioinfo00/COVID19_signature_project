@@ -1,0 +1,295 @@
+---
+title: "Fig 3 - COVID-19 signature validation"
+output: rmarkdown::github_document
+---
+
+Here we assess the generalization performance (including both detection and cross-reactivity) of the identified 11-gene COVID-19 signature in independent studies. We then compare the resulting performance with four previously published signatures.
+
+### Signature performance in GSE163151
+This dataset includes samples from COVID-19 patients, from other viral 
+and bacterial infections, and from healthy controls. Thus, it makes it possible to simultaneously test  COVID-19 detection and cross-reactivity. 
+```{r, message = FALSE}
+library(dplyr)
+library(ggplot2)
+source("../scripts/helper_functions.R")
+
+# signature definition
+COVID19_signature_up <-
+  c("PIF1", "GUCD1", "EHD3", "TCEAL3", "BANF1")
+COVID19_signature_down <-
+  c("ARAP2", "SLC25A46", "SLK", "ROCK2", "TVP23B", "DOCK5")
+
+# reading dataset
+dataset <-
+  readRDS(file = "../../data/mRNA_studies/GSE163151_preprocessed.RDS")
+COVID19_signature_up_expression <- dataset$X[COVID19_signature_up, ]
+COVID19_signature_down_expression <-
+  dataset$X[COVID19_signature_down, ]
+
+# computing signature scores for each sample
+sample_score <- scale(
+  apply(COVID19_signature_up_expression, 2, function(x) {
+    geom_mean(x)
+  }) -
+    apply(COVID19_signature_down_expression, 2, function(x) {
+      geom_mean(x)
+    })
+)
+
+dataset$y[, "disease state:ch1"] <- factor(
+  dataset$y[, "disease state:ch1"],
+  levels = c(
+    "Donor control",
+    "COVID-19",
+    "Viral acute respiratory illness",
+    "Bacterial sepsis"
+  )
+)
+
+score_df <- data.frame(
+  score = sample_score,
+  group = dataset$y[, "disease state:ch1"]
+) %>%
+  dplyr::mutate(group = relevel(group, ref = "Donor control"))
+
+
+# ROC curve related to COVID-19 vs control
+covid_vs_control_roc_curve <- get_roc_curve(score_df,
+  control_group = "Donor control",
+  positive_group = "COVID-19"
+)
+
+# ROC curve related to viral vs control
+viral_vs_control_roc_curve <- get_roc_curve(score_df,
+  control_group = "Donor control",
+  positive_group = "Viral acute respiratory illness"
+)
+
+# ROC curve related to bacterial vs control
+bact_vs_control_roc_curve <- get_roc_curve(score_df,
+  control_group = "Donor control",
+  positive_group = "Bacterial sepsis"
+)
+
+# plotting the ROC curves for all contrasts
+p_roc <- pROC::ggroc(
+  list(
+    COVID = covid_vs_control_roc_curve,
+    viral = viral_vs_control_roc_curve,
+    bacterial = bact_vs_control_roc_curve
+  ),
+  size = 2
+) + theme_minimal() +
+  scale_colour_manual(values = c("#c9daf8ff", "#fce5cdff", "#d9ead3ff")) +
+  annotate(
+    "text",
+    x = 0.72,
+    y = 0.9,
+    label = paste(
+      "COVID-19 contrast \n AUC=",
+      round(
+        pROC::auc(covid_vs_control_roc_curve), 2
+      )
+    ),
+    hjust = 0
+  ) +
+  annotate(
+    "text",
+    x = 0.52,
+    y = 0.45,
+    label = paste(
+      "viral respiratory contrast \n AUC=",
+      round(
+        pROC::auc(viral_vs_control_roc_curve), 2
+      )
+    ),
+    hjust = 0
+  ) +
+  annotate(
+    "text",
+    x = 0.4,
+    y = 0.1,
+    label = paste(
+      "bacterial sepsis contrast \n AUC=",
+      round(pROC::auc(
+        bact_vs_control_roc_curve
+      ), 3)
+    ),
+    hjust = 0
+  ) +
+  theme_Publication() + theme(legend.position = "none") +
+  ggtitle("GSE163151 validation") +
+  theme(text = element_text(size = rel(4.5))) +
+  theme(plot.title = element_text(size = rel(3.5)))
+
+p_roc
+```
+
+
+### Signature performance in GSE149689
+This dataset includes samples from COVID-19 patients and from Flu patients. Thus, it makes it possible to simultaneously test  COVID-19 detection and cross-reactivity with flu. 
+
+```{r, message = FALSE}
+dataset <- readRDS(file = "../../data/mRNA_studies/COVID19_validation/GSE149689_pseudobulk_MI.RDS")
+COVID19_signature_up_expression <- dataset$expr[COVID19_signature_up, ]
+COVID19_signature_down_expression <- dataset$expr[COVID19_signature_down, ]
+
+sample_score <- scale(
+  apply(COVID19_signature_up_expression, 2, function(x) {
+    geom_mean(x)
+  }) -
+    apply(COVID19_signature_down_expression, 2, function(x) {
+      geom_mean(x)
+    })
+)
+
+score_df <- data.frame(
+  score = sample_score,
+  group = dataset$pheno$covid_status
+) %>%
+  dplyr::mutate(group = relevel(group, ref = "Healthy"))
+
+
+# ROC curve related to COVID-19 vs control
+covid_vs_control_roc_curve <- get_roc_curve(score_df,
+  control_group = "Healthy",
+  positive_group = "COVID-19"
+)
+
+# ROC curve related to viral vs control
+viral_vs_control_roc_curve <- get_roc_curve(score_df,
+  control_group = "Healthy",
+  positive_group = "Flu"
+)
+
+
+p_roc_GSE149689 <- pROC::ggroc(
+  list(
+    COVID = covid_vs_control_roc_curve,
+    viral = viral_vs_control_roc_curve
+  ),
+  size = 2
+) + theme_minimal() +
+  scale_colour_manual(values = c("#c9daf8ff", "#fce5cdff")) +
+  annotate(
+    "text",
+    x = 0.72,
+    y = 0.9,
+    label = paste(
+      "COVID-19 contrast \n AUC=",
+      round(pROC::auc(covid_vs_control_roc_curve), 2)
+    ),
+    hjust = 0
+  ) +
+  annotate(
+    "text",
+    x = 0.46,
+    y = 0.45,
+    label = paste(
+      "viral respiratory contrast \n AUC=",
+      round(pROC::auc(viral_vs_control_roc_curve), 2)
+    ),
+    hjust = 0
+  ) +
+  theme_Publication() + theme(legend.position = "none") +
+  ggtitle("GSE149689 validation") + theme(text = element_text(size = rel(4.5))) +
+  theme(plot.title = element_text(size = rel(3.5)))
+p_roc_GSE149689
+```
+
+
+### Global evaluation for all COVID-19 and non-COVID-19 validation studies.
+```{r message = FALSE}
+filter_object <-
+  readRDS("../../data/mRNA_studies/filter_object.RDS")
+
+all_contrasts <-
+  readRDS(file = "../../data/mRNA_studies/all_contrasts.RDS")
+all_contrasts_dict <-
+  readRDS(file = "../../data/mRNA_studies/all_contrasts_dict.RDS")
+levels(all_contrasts_dict$class1)[4] <- "non-infectious"
+
+validation_contrasts <- all_contrasts[which(all_contrasts_dict$use == "validation")]
+validation_contrasts_dict <- all_contrasts_dict %>% filter(use == "validation")
+
+COVID19_signature <- list(
+  up = COVID19_signature_up,
+  down = COVID19_signature_down
+)
+
+COVID19_validation_contrasts_AUC <- compute_contrasts_AUCs(
+  COVID19_signature,
+  filter_object,
+  validation_contrasts,
+  validation_contrasts_dict
+)
+
+
+# generating summary statistics (first quartile, median, third quartile)
+COVID19_validation_contrasts_AUC %>%
+  group_by(class1, use) %>%
+  summarise(perfomance = quantile(AUC, probs = c(0.25, 0.5, 0.75)))
+
+p_boxplot <- get_AUC_distribution_boxplot(COVID19_validation_contrasts_AUC)
+
+p_boxplot
+
+compute_AUC_distribution_p_values(COVID19_validation_contrasts_AUC)
+```
+
+
+### Comparison with four previously published COVID-19 signatures.
+```{r message = FALSE, fig.height = 15, fig.width = 8}
+published_signatures = readRDS('../../data/published_signatures/published_signatures.RDS')
+
+published_signatures = published_signatures[c(4, 1, 3, 2)]
+names(published_signatures) = paste('signature', 1:4)
+published_signatures_validation_AUC = lapply(published_signatures, 
+                                             function(x) compute_contrasts_AUCs(x,
+                                                                                filter_object, 
+                                                                                validation_contrasts,
+                                                                                validation_contrasts_dict))
+
+#from Thair, exclude the discovery study
+published_signatures_validation_AUC[[2]] = published_signatures_validation_AUC[[2]] %>% 
+  filter(!grepl('GSE152641', study))
+
+
+#plotting distributions
+published_signatures_validation_AUC_long = published_signatures_validation_AUC %>%
+  plyr::ldply((rbind))
+
+p_boxplots = get_AUC_distribution_boxplot(published_signatures_validation_AUC_long) + 
+  geom_point(aes(x = 1, y = -0.12), shape=22, fill="#c9daf8ff", 
+             color="#c9daf8ff", size=5, stroke=3) + 
+  geom_point(aes(x = 2, y = -0.12), shape=22, fill="white", 
+             color="#fce5cdff", size=5, stroke=3) + 
+  geom_point(aes(x = 3, y = -0.12), shape=22, 
+             fill="white", color="#d9ead3ff", size=5, stroke=3) + 
+  geom_point(aes(x = 4, y = -0.12), shape=22, 
+             fill="white", color="#ead1dcff", size=5, stroke=3) + 
+  facet_wrap(~.id, ncol = 1) + ylim(c(-0.20, 1)) + 
+  scale_y_continuous(limits =c(-0.25, 1.25),
+                     breaks = seq(-0.25, 1.25, by = 0.25),
+                     labels = c('', seq(0, 1.0, by = 0.25), ''))
+
+
+#generating summary statistics (first quartile, median, third quartile)
+lapply(published_signatures_validation_AUC, function(x) 
+  x %>%
+    group_by(class1, use) %>%
+    summarise(perfomance = quantile(AUC, probs = c(0.25, 0.5, 0.75)), .groups = 'drop')
+  )
+
+p_boxplots
+lapply(published_signatures_validation_AUC, compute_AUC_distribution_p_values)
+```
+
+
+```{r message = FALSE}
+sessionInfo()
+```
+
+
+
+

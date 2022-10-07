@@ -1,11 +1,13 @@
-Fig S5 - COVID-19 signature cross-reactivity with pregnancy
-================
+---
+title: "Fig S5 - COVID-19 signature cross-reactivity with pregnancy"
+output: rmarkdown::github_document
+---
 
-Here we explore whether the COVID-19 signature cross-reacts with
-pregnancy. Pregnancy data is from the study
-[GSE108497](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE108497).
+Here we explore whether the COVID-19 signature cross-reacts with pregnancy.
+Pregnancy data is from the study [GSE108497](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE108497). 
 
-``` r
+
+```{r, message = FALSE, warning = FALSE, fig.height = 12}
 library(dplyr)
 library(ggplot2)
 source("../scripts/helper_functions.R")
@@ -113,6 +115,5 @@ gridExtra::grid.arrange(p_box_binary,
                         p_box_tp, 
                         p_ROC_tp, 
                         layout_matrix = layout_matrix)  
-```
 
-![](fig_S5_pregnancy_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+```
