@@ -671,7 +671,7 @@ get_AUC_distribution_boxplot <- function(contrasts_AUC_df) {
     annotate(
       "text",
       x = 1,
-      y = 1.1,
+      y = 1.2,
       label = "detection",
       size = 6
     ) +
@@ -679,7 +679,7 @@ get_AUC_distribution_boxplot <- function(contrasts_AUC_df) {
     annotate(
       "text",
       x = 3,
-      y = 1.1,
+      y = 1.2,
       label = "cross-reactivity",
       size = 6
     ) +
@@ -723,4 +723,186 @@ compute_AUC_distribution_p_values = function(contrasts_AUC){
   
   return(combined_p_values)
   
+}
+
+
+plot_SCHULTE_results = function(signature_up, signature_down, cell_count_threshold = 500){
+  C19_ulas_data = read.table('../../data/mRNA_studies/severity/pseudo_bulk_RNA_count_Ulas.txt', sep = '\t')
+  C19_ulas_data = 1 + log10(1 + C19_ulas_data)
+  C19_ulas_meta = read.csv2('../../data/mRNA_studies/severity/pseudo_bulk_RNA_metadata_Ulas.txt', sep = '\t')
+  C19_ulas_meta$aliquot_ID = make.names(C19_ulas_meta$aliquot_ID)
+  
+  C19_ulas_meta$aliquot_ID == names(C19_ulas_data)
+  COVID19_signature_up_expression <- C19_ulas_data[signature_up, ]
+  COVID19_signature_down_expression <- C19_ulas_data[signature_down, ]
+  
+  sample_score <- scale(
+    apply(COVID19_signature_up_expression, 2, function(x) {
+      geom_mean(x)
+    }) -
+      apply(COVID19_signature_down_expression, 2, function(x) {
+        geom_mean(x)
+      })
+  )
+  
+  C19_ulas_meta$score = sample_score
+  C19_ulas_meta = C19_ulas_meta %>% filter(group_per_sample != 'control', 
+                                           cell_count >= cell_count_threshold) 
+  
+  print(dim(C19_ulas_meta))
+  ulas_box = ggplot(C19_ulas_meta, aes(x = group_per_sample, y = score)) + 
+    geom_boxplot(outlier.shape = NA) + geom_jitter() +
+    theme_Publication() + ylab('COVID-19 signature score') + 
+    xlab('')
+  
+  p12 = pROC::roc(droplevels(C19_ulas_meta$group_per_sample), 
+                  as.numeric(C19_ulas_meta$score)) 
+  print(p12)
+  ulas_roc = pROC::ggroc(p12) + theme_Publication() 
+  
+  return(list(ulas_box = ulas_box, ulas_roc = ulas_roc))
+}
+
+plot_COMBAT_results = function(signature_up, signature_down, cell_count_threshold = 500){
+  
+  C19_knight_data = read.table('../../data/mRNA_studies/severity/pseudo_bulk_RNA_count_Knight.txt', sep = '\t')
+  C19_knight_data = 1 + log10(1 + C19_knight_data)
+  C19_knight_meta = read.csv2('../../data/mRNA_studies/severity/pseudo_bulk_RNA_metadata_Knight.txt', sep = '\t')
+  C19_knight_meta$aliquot_ID = make.names(C19_knight_meta$aliquot_ID)
+  
+  # checking cell counts
+  sum(C19_knight_meta$cell_count <= cell_count_threshold)
+  C19_knight_meta = C19_knight_meta %>% filter(cell_count >= cell_count_threshold)
+  
+  C19_knight_meta$SARSCoV2PCR = factor(C19_knight_meta$SARSCoV2PCR)
+  C19_knight_meta$Outcome = factor(C19_knight_meta$Outcome)
+  C19_knight_meta$TimeSinceOnset = factor(C19_knight_meta$TimeSinceOnset)
+  C19_knight_meta$Hospitalstay = factor(C19_knight_meta$Hospitalstay)
+  C19_knight_meta$Death28 = as.factor(C19_knight_meta$Death28)
+  
+  C19_knight_meta$Source = factor(gsub('COVID_HCW_MILD', 'COVID_MILD', C19_knight_meta$Source))
+  C19_knight_data = C19_knight_data[, C19_knight_meta$aliquot_ID]
+  COVID19_signature_up_expression <- C19_knight_data[signature_up, ]
+  COVID19_signature_down_expression <- C19_knight_data[signature_down, ]
+  
+  sample_score <- scale(
+    apply(COVID19_signature_up_expression, 2, function(x) {
+      geom_mean(x)
+    }) -
+      apply(COVID19_signature_down_expression, 2, function(x) {
+        geom_mean(x)
+      })
+  )
+  
+  C19_knight_meta$score = sample_score
+  C19_knight_meta = C19_knight_meta %>% filter(Institute == 'Oxford', Source != 'Sepsis') 
+  C19_knight_meta$Source = droplevels(C19_knight_meta$Source)
+  
+  Source_levels = c('HV', 'COVID_MILD', 
+                    'COVID_SEV', 'COVID_CRIT')
+  C19_knight_meta$Source = factor(C19_knight_meta$Source, 
+                                  levels = Source_levels, ordered = T)
+  
+  print(dim(C19_knight_meta))
+  p_box = ggplot(C19_knight_meta, aes(x = Source, y = score)) + 
+    geom_boxplot(outlier.shape = NA) + geom_jitter() +
+    ylim(c(-2, 3)) + theme_Publication()
+  
+  # produce multiple ROC cruves for each level
+  ROC_curves = list()
+  for (level in Source_levels[-1]){
+    
+    C19_knight_meta_temp = C19_knight_meta %>% filter(Source %in% c('HV', level))
+    ROC_curves[[level]] = pROC::roc(droplevels(C19_knight_meta_temp$Source), 
+                                    as.numeric(C19_knight_meta_temp$score))
+  }
+  
+  p_ROC = pROC::ggroc(ROC_curves) + facet_wrap(.~name, nrow = 1) + 
+    theme_Publication() + theme(legend.position = 'none') 
+  
+  AUC_values = lapply(ROC_curves, function(x) pROC::auc(x)) %>% reshape2::melt()
+  AUC_values$L1 = factor(AUC_values$L1, levels = c('COVID_MILD', 
+                                                   'COVID_SEV', 
+                                                   'COVID_CRIT'), ordered = T)
+  print(AUC_values)
+  p_line = ggplot(AUC_values %>% reshape2::melt(), 
+                  aes(x = L1, y = value, group = 0)) + geom_line() + 
+    geom_point(size = 4) + theme_Publication() + 
+    xlab('severity') + ylab('AUC') + ylim(c(0.5, 0.75))
+  
+  return(list(p_box = p_box, p_ROC = p_ROC, p_line = p_line))
+}
+
+plot_STEPHE_results = function(signature_up, signature_down, cell_count_threshold = 500){
+  
+  C19_hannifa_data = read.table('../../data/mRNA_studies/severity/pseudo_bulk_RNA_count_Haniffa.txt', sep = '\t')
+  C19_hannifa_data = 1 + log10(1 + C19_hannifa_data)
+  C19_hannifa_meta = read.csv2('../../data/mRNA_studies/severity/pseudo_bulk_RNA_metadata_Haniffa.txt', sep = '\t')
+  
+  # check that data and metadata are aligned
+  C19_hannifa_meta$aliquot_ID == names(C19_hannifa_data)
+  
+  COVID19_signature_up_expression <- C19_hannifa_data[signature_up, ]
+  COVID19_signature_down_expression <- C19_hannifa_data[signature_down, ]
+  
+  sample_score <- scale(
+    apply(COVID19_signature_up_expression, 2, function(x) {
+      geom_mean(x)
+    }) -
+      apply(COVID19_signature_down_expression, 2, function(x) {
+        geom_mean(x)
+      })
+  )
+  
+  C19_hannifa_meta$score = sample_score
+  
+  severity_levels = c('Healthy', 'Asymptomatic', 'Mild', 'Moderate', 
+                      'Severe', 'Critical ', 'Death')
+  
+  C19_hannifa_meta = C19_hannifa_meta %>% filter(Worst_Clinical_Status %in% severity_levels, 
+                                                 cell_count >=cell_count_threshold) 
+  
+  C19_hannifa_meta$Worst_Clinical_Status = droplevels(C19_hannifa_meta$Worst_Clinical_Status)
+  
+  C19_hannifa_meta$Worst_Clinical_Status = plyr::mapvalues(C19_hannifa_meta$Worst_Clinical_Status, 
+                                                           from = levels(C19_hannifa_meta$Worst_Clinical_Status),
+                                                           to = c('Mild/Mod', 'Critical', 'Critical', 
+                                                                  'Healthy', 'Mild/Mod', 'Mild/Mod', 'Severe')) 
+  
+  C19_hannifa_meta$Worst_Clinical_Status = factor(C19_hannifa_meta$Worst_Clinical_Status, 
+                                                  levels = c('Healthy', 'Mild/Mod', 'Severe', 'Critical'))
+  
+  
+  Source_levels = levels(C19_hannifa_meta$Worst_Clinical_Status)
+  
+  print(dim(C19_hannifa_meta))
+  p_box = ggplot(C19_hannifa_meta, aes(x = Worst_Clinical_Status, y = score)) + 
+    geom_boxplot(outlier.shape = NA) + geom_jitter() + theme_Publication()
+  
+  
+  # produce multiple ROC cruves for each level
+  ROC_curves = list()
+  for (level in Source_levels[-1]){
+    
+    C19_hannifa_meta_temp = C19_hannifa_meta %>% filter(Worst_Clinical_Status %in% c('Healthy', level))
+    ROC_curves[[level]] = pROC::roc(droplevels(C19_hannifa_meta_temp$Worst_Clinical_Status), 
+                                    as.numeric(C19_hannifa_meta_temp$score))
+  }
+  p_ROC = pROC::ggroc(ROC_curves) + facet_wrap(.~name, nrow = 1) + 
+    theme_Publication() + theme(legend.position = 'none') 
+  
+  
+  AUC_values = lapply(ROC_curves, function(x) pROC::auc(x)) %>% reshape2::melt()
+  AUC_values$L1 = factor(AUC_values$L1, levels = c('Mild/Mod', 
+                                                   'Severe', 
+                                                   'Critical'), ordered = T)
+  print(AUC_values)
+  p_line = ggplot(AUC_values %>% reshape2::melt(), 
+                  aes(x = L1, y = value, group = 0)) + geom_line() + 
+    geom_point(size = 4) + theme_Publication() + 
+    xlab('severity') + ylab('AUC') + ylim(c(0.5, 0.852))
+  
+  return(list(p_box = p_box, 
+              p_ROC = p_ROC, 
+              p_line = p_line))  
 }
